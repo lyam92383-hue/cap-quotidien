@@ -70,7 +70,8 @@ button{cursor:pointer}
 .prayer button{border:2px solid var(--line);background:var(--soft);border-radius:var(--r-sm);padding:12px 2px;font-weight:600;font-size:14px}
 .prayer.on button{background:var(--done);border-color:var(--done);color:#fff}
 .prayer.next button{border-color:var(--accent)}
-.prayer input{width:100%;min-width:0;text-align:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 0;font-size:13px}
+.prayer input,.prayer .heure{width:100%;min-width:0;text-align:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 0;font-size:13px}
+.prayer .heure{font-weight:600}
 
 /* champs */
 .input{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:9px 14px;min-width:0}
@@ -117,7 +118,7 @@ select.input{padding-right:10px}
   .prayers{grid-template-columns:1fr}
   .prayer{flex-direction:row;align-items:center}
   .prayer button{flex:1;padding:10px 14px;text-align:left}
-  .prayer input{width:120px;flex:none;padding:8px 0}
+  .prayer input,.prayer .heure{width:120px;flex:none;padding:8px 0}
   .section-link{grid-template-columns:90px 1fr 44px}
 }
 </style>
@@ -198,9 +199,13 @@ function scores(s){
 
 function serie(){var n=0,s=auj();if(scores(s).prieres<5)s=decale(s,-1);while(n<1000&&scores(s).prieres===5){n++;s=decale(s,-1)}return n}
 function totalCoran(){var t=0;try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf("cq-jour-")===0){var d=k===("cq-jour-"+cur)?cache[cur]:lire(k);t+=(d&&d.coran)||0}}}catch(e){}return t}
+/* horaires de la mosquée (horaires.json, mis à jour chaque nuit) ou saisis à la main */
+var AUTO=null;
+function horairesAuto(s){return AUTO&&AUTO.jours&&AUTO.jours[s]||null}
+function horairesDu(s){var a=horairesAuto(s);return a&&a.fajr?a:R.horaires}
 function prochaine(){
-  if(cur!==auj())return"";var n=new Date(),m=n.getHours()*60+n.getMinutes();
-  for(var i=0;i<PRIERES.length;i++){var h=R.horaires[PRIERES[i][0]];if(!h)continue;var a=h.split(":");if(+a[0]*60+ +a[1]>m)return PRIERES[i][0]}
+  if(cur!==auj())return"";var n=new Date(),m=n.getHours()*60+n.getMinutes(),H=horairesDu(cur);
+  for(var i=0;i<PRIERES.length;i++){var h=H[PRIERES[i][0]];if(!h)continue;var a=h.split(":");if(+a[0]*60+ +a[1]>m)return PRIERES[i][0]}
   return""}
 
 /* ---------- petits composants ---------- */
@@ -211,10 +216,11 @@ function compteur(chemin,pas,unite,val,dec){var f=dec?virgule:function(x){return
 function champ(chemin,val,pas,label,ph){return '<input class="input n num" type="number" min="0" step="'+pas+'" inputmode="decimal" aria-label="'+label+'" placeholder="'+(ph||"0")+'" value="'+esc(val||"")+'" data-c="nombre" data-p="'+chemin+'">'}
 function carte(titre,pct,corps){return '<section class="card"><div class="card-head"><h2>'+titre+'</h2>'+(pct===undefined?'':'<span class="pct num">'+(pct==null?'Repos':pc(pct)+' %')+'</span>')+'</div>'+corps+'</section>'}
 function anneau(x){var r=40,c=2*Math.PI*r;return '<div class="ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="'+r+'" fill="none" stroke="var(--soft)" stroke-width="10"/><circle cx="48" cy="48" r="'+r+'" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+(c*borne(x)).toFixed(1)+' '+c.toFixed(1)+'"/></svg><b class="num">'+pc(x)+'%</b></div>'}
-function blocPrieres(d){var np=prochaine();
+function blocPrieres(d){var np=prochaine(),a=horairesAuto(cur);a=a&&a.fajr?a:null;
   return '<div class="prayers">'+PRIERES.map(function(p){var on=d.prieres[p[0]];
     return '<div class="prayer'+(on?' on':'')+(np===p[0]?' next':'')+'"><button data-a="coche" data-p="prieres.'+p[0]+'" aria-pressed="'+(!!on)+'">'+p[1]+'</button>'
-    +'<input type="time" aria-label="Heure de '+p[1]+'" value="'+esc(R.horaires[p[0]])+'" data-c="horaire" data-p="'+p[0]+'"></div>'}).join("")+'</div>'}
+    +(a?'<span class="heure num">'+esc(a[p[0]]||"–")+'</span>':'<input type="time" aria-label="Heure de '+p[1]+'" value="'+esc(R.horaires[p[0]])+'" data-c="horaire" data-p="'+p[0]+'">')+'</div>'}).join("")+'</div>'
+   +(a?'<div class="muted small">Horaires de la '+esc(AUTO.mosquee||"mosquée")+(a.chourouq?' · Chourouq '+esc(a.chourouq):'')+(a.joumoua?' · Joumoua '+esc(a.joumoua):'')+'</div>':'')}
 
 /* ---------- onglets ---------- */
 var VUES={
@@ -222,13 +228,13 @@ jour:function(d,s){
   var np=prochaine(),nom={};PRIERES.forEach(function(p){nom[p[0]]=p[1]});
   var liens=[["foi","Foi"],["sport","Sport"],["alimentation","Alimentation"],["etudes","Études"],["valorant","Valorant"],["routine","Routine"]];
   return carte("Ma journée",undefined,'<div class="score">'+anneau(s.total)+'<div><div class="big num">'+pc(s.total)+' %</div><div class="muted small">de tes objectifs du jour sont atteints</div></div></div>')
-   +carte("Prières",s.prieres/5,blocPrieres(d)+'<div class="muted small">'+(np?'Prochaine : <b>'+nom[np]+' à '+R.horaires[np]+'</b>. ':'')+'Série de 5 prières : <b class="num">'+serie()+' j</b></div>')
+   +carte("Prières",s.prieres/5,blocPrieres(d)+'<div class="muted small">'+(np?'Prochaine : <b>'+nom[np]+' à '+horairesDu(cur)[np]+'</b>. ':'')+'Série de 5 prières : <b class="num">'+serie()+' j</b></div>')
    +carte("Par domaine",undefined,'<div class="list">'+liens.map(function(l){var v=s[l[0]];
       return '<a class="section-link" href="#'+l[0]+'"><span>'+l[1]+'</span>'+(v==null?'<span class="muted small">Jour de repos</span>':barre(v))+'<span class="pct num">'+(v==null?'':pc(v)+'%')+'</span></a>'}).join("")+'</div>')
    +carte("Note du jour",undefined,'<textarea class="input" id="note" data-t="note" placeholder="Ce qui a bien marché, ce que je change demain">'+esc(d.note)+'</textarea>');
 },
 foi:function(d,s){
-  var manque=PRIERES.some(function(p){return!R.horaires[p[0]]});
+  var H=horairesDu(cur),manque=PRIERES.some(function(p){return!H[p[0]]});
   return carte("Les 5 prières",s.prieres/5,blocPrieres(d)+(manque?'<div class="notice">Tape l\'heure sous chaque prière pour voir la prochaine.</div>':'')+'<div class="muted small">Série de 5 prières : <b class="num">'+serie()+' jour(s)</b></div>')
    +carte("Lecture du Coran",borne(d.coran/R.coran),'<div class="row between">'+compteur("coran",1,"p.",d.coran)+'<span class="muted small">objectif '+R.coran+' pages</span></div>'+barre(d.coran/R.coran)+'<div class="muted small num">Total noté ici : '+totalCoran()+' pages sur 604</div>')
    +carte("Adhkar",undefined,'<div class="list">'+coche("adhkar.m","Adhkar du matin",d.adhkar.m)+coche("adhkar.s","Adhkar du soir",d.adhkar.s)+'</div>');
@@ -346,6 +352,10 @@ function importer(f){
 }
 
 rendu();
+fetch("horaires.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null}).then(function(j){
+  if(j&&j.jours){AUTO=j;rendu()}
+}).catch(function(){});
+setInterval(function(){if(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;if(onglet==="jour"||onglet==="foi")rendu()},60000);
 })();
 </script>
 </body>
