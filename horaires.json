@@ -1,0 +1,63 @@
+{
+ "mosquee": "Mosquée de Courbevoie",
+ "source": "https://masjidbox.com/horaires-de-priere/mosquee-de-courbevoie",
+ "jours": {
+  "2026-11-22": {
+   "fajr": "06:56",
+   "chourouq": "08:11",
+   "dhuhr": "12:37",
+   "asr": "14:42",
+   "maghrib": "17:03",
+   "isha": "18:50"
+  },
+  "2026-11-23": {
+   "fajr": "06:58",
+   "chourouq": "08:12",
+   "dhuhr": "12:37",
+   "asr": "14:41",
+   "maghrib": "17:02",
+   "isha": "18:50"
+  },
+  "2026-11-24": {
+   "fajr": "06:59",
+   "chourouq": "08:14",
+   "dhuhr": "12:38",
+   "asr": "14:41",
+   "maghrib": "17:01",
+   "isha": "18:50"
+  },
+  "2026-11-25": {
+   "fajr": "07:00",
+   "chourouq": "08:15",
+   "dhuhr": "12:38",
+   "asr": "14:40",
+   "maghrib": "17:01",
+   "isha": "18:50"
+  },
+  "2026-11-26": {
+   "fajr": "07:01",
+   "chourouq": "08:16",
+   "dhuhr": "12:38",
+   "asr": "14:40",
+   "maghrib": "17:00",
+   "isha": "18:50"
+  },
+  "2026-11-27": {
+   "fajr": "07:02",
+   "chourouq": "08:18",
+   "joumoua": "12:39",
+   "asr": "14:39",
+   "maghrib": "16:59",
+   "isha": "18:50"
+  },
+  "2026-11-28": {
+   "fajr": "07:04",
+   "chourouq": "08:19",
+   "dhuhr": "12:39",
+   "asr": "14:39",
+   "maghrib": "16:58",
+   "isha": "18:50"
+  }
+ },
+ "misAJour": "2026-11-22T12:16:33.048Z"
+}
