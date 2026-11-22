@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cap Quotidien</title>
+<meta name="description" content="Ma journée organisée : prières, Coran, sport, alimentation, études, Valorant et routine.">
+<style>
+:root{
+  --bg:#f6f6f4; --card:#ffffff; --soft:#efefec; --line:#e2e2de;
+  --text:#1c1c1a; --muted:#6c6c66; --accent:#2b62d9; --accent-soft:#e7eefc; --done:#2b62d9;
+  --r:18px; --r-sm:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#151515; --card:#1f1f1e; --soft:#2a2a28; --line:#33332f;
+  --text:#ededea; --muted:#a3a39c; --accent:#6f9bf5; --accent-soft:#25324d; --done:#6f9bf5;
+  color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:16px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{margin:0;line-height:1.25}
+h1{font-size:22px;text-transform:capitalize}
+h2{font-size:18px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* en-tête */
+.top{display:flex;align-items:center;gap:10px}
+.top h1{flex:1;min-width:0}
+.top .nav{display:flex;gap:6px;flex:none}
+.round-btn{border:1px solid var(--line);background:var(--card);border-radius:999px;height:40px;min-width:40px;padding:0 14px}
+.round-btn:hover{background:var(--soft)}
+
+/* onglets */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:0;background:transparent;border-radius:999px;padding:8px 14px;color:var(--muted);font-weight:500;text-decoration:none;font-size:15px}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--accent);color:#fff}
+
+/* cartes */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:12px}
+.card-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.pct{font-weight:700;color:var(--accent)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.bar{height:10px;background:var(--soft);border-radius:999px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);border-radius:999px}
+
+/* cases à cocher */
+.check{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--soft);border:0;border-radius:var(--r-sm);padding:12px 14px}
+.check:hover{filter:brightness(.97)}
+.box{flex:none;width:24px;height:24px;border-radius:999px;border:2px solid var(--muted);display:grid;place-items:center}
+.check.on .box{background:var(--done);border-color:var(--done)}
+.check.on .box::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.check.on .label{color:var(--muted);text-decoration:line-through}
+.label{flex:1;min-width:0;overflow-wrap:anywhere}
+.list{display:flex;flex-direction:column;gap:8px}
+
+/* prières */
+.prayers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.prayer{display:flex;flex-direction:column;gap:6px}
+.prayer button{border:2px solid var(--line);background:var(--soft);border-radius:var(--r-sm);padding:12px 2px;font-weight:600;font-size:14px}
+.prayer.on button{background:var(--done);border-color:var(--done);color:#fff}
+.prayer.next button{border-color:var(--accent)}
+.prayer input{width:100%;min-width:0;text-align:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 0;font-size:13px}
+
+/* champs */
+.input{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:9px 14px;min-width:0}
+.input.n{width:96px;text-align:right}
+textarea.input{border-radius:var(--r-sm);width:100%;min-height:80px;resize:vertical}
+select.input{padding-right:10px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:500}
+.btn:hover{background:var(--soft)}
+.btn.main{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.main:hover{filter:brightness(1.08)}
+.counter{display:flex;align-items:center;gap:8px}
+.counter b{min-width:70px;text-align:center}
+.big{font-size:26px;font-weight:700}
+.tag{font-size:12px;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);flex:none}
+.del{border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;padding:6px 10px;border-radius:999px}
+.del:hover{background:var(--soft)}
+.task{display:flex;align-items:center;gap:6px}
+.task .check{flex:1}
+
+/* aujourd'hui */
+.score{display:flex;align-items:center;gap:18px}
+.ring{width:96px;height:96px;flex:none;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
+.section-link{display:grid;grid-template-columns:110px 1fr 48px;gap:12px;align-items:center;border:0;background:var(--soft);border-radius:var(--r-sm);padding:12px 14px;text-align:left;text-decoration:none;color:inherit}
+.section-link:hover{filter:brightness(.97)}
+.section-link .pct{text-align:right}
+
+/* semaine */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:150px}
+.day{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;border:0;background:transparent;padding:0}
+.day .col{width:100%;max-width:42px;flex:1;background:var(--soft);border-radius:999px;display:flex;align-items:flex-end;overflow:hidden}
+.day .col span{width:100%;background:var(--accent);border-radius:999px}
+.day.sel .col{outline:2px solid var(--text);outline-offset:2px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat{background:var(--soft);border-radius:var(--r-sm);padding:12px 14px}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.settings label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.settings .input{width:100%}
+.notice{background:var(--accent-soft);border-radius:var(--r-sm);padding:12px 14px;font-size:14px}
+
+@media (max-width:520px){
+  h1{font-size:19px}
+  .prayers{grid-template-columns:1fr}
+  .prayer{flex-direction:row;align-items:center}
+  .prayer button{flex:1;padding:10px 14px;text-align:left}
+  .prayer input{width:120px;flex:none;padding:8px 0}
+  .section-link{grid-template-columns:90px 1fr 44px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- données de base ---------- */
+var PRIERES=[["fajr","Fajr"],["dhuhr","Dhuhr"],["asr","Asr"],["maghrib","Maghrib"],["isha","Isha"]];
+var MATIERES=[["cyber","Cybersécurité"],["reseau","Réseau"],["elec","Électronique"]];
+var JOURS=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+var VALO=[["warm","Échauffement aim 15 min (Range ou aim trainer)"],["dm","Deathmatch, 2 parties"],["vod","Revoir 1 VOD et noter 1 erreur"],["lineup","Travailler 1 lineup ou 1 util sur une map"],["ranked","Classées avec la tête froide (3 max)"]];
+var MATIN=[["reveil","Réveil à l'heure"],["eau","Un verre d'eau"],["plan","Relire le plan du jour"],["lit","Lit fait et douche"]];
+var SOIR=[["ecrans","Écrans coupés 30 min avant de dormir"],["sac","Affaires de demain prêtes"],["bilan","Bilan de la journée"]];
+var ONGLETS=[["jour","Aujourd'hui"],["foi","Foi"],["sport","Sport"],["alimentation","Alimentation"],["etudes","Études"],["valorant","Valorant"],["routine","Routine"],["semaine","Semaine"],["reglages","Réglages"]];
+var PROGRAMME={
+0:"Repos actif, marche 30 min",
+1:"Push : pecs, épaules, triceps\nDéveloppé couché 4x8\nDéveloppé incliné haltères 3x10\nDéveloppé militaire 3x10\nÉlévations latérales 4x15\nExtensions triceps poulie 3x12",
+2:"Pull : dos, biceps\nTractions 4x8\nRowing barre 4x8\nTirage horizontal 3x12\nFace pull 3x15\nCurl haltères 3x12",
+3:"Jambes\nSquat 4x8\nPresse à cuisses 3x12\nSoulevé de terre roumain 3x10\nLeg curl 3x12\nMollets 4x15",
+4:"Repos ou cardio léger",
+5:"Push : volume\nDéveloppé incliné barre 4x8\nDips 3x10\nPec deck 3x15\nÉlévations latérales 4x15\nTriceps barre au front 3x12",
+6:"Pull et gainage\nTirage vertical 4x10\nRowing haltère 3x10\nOiseau 3x15\nCurl marteau 3x12\nGainage 3x45 s"};
+
+function reglagesDefaut(){return{horaires:{fajr:"",dhuhr:"",asr:"",maghrib:"",isha:""},coran:5,
+  objectifs:{kcal:2800,prot:150,eau:3,sommeil:7.5,etudes:180},programme:JSON.parse(JSON.stringify(PROGRAMME)),taches:[]};}
+function jourVide(){return{prieres:{},coran:0,adhkar:{},sport:{fait:{},kg:{}},nut:{kcal:0,prot:0,eau:0,poids:""},
+  etudes:{cyber:0,reseau:0,elec:0},valo:{fait:{},v:0,d:0,focus:""},routine:{fait:{},sommeil:0},note:""}}
+
+/* ---------- outils ---------- */
+function pad(n){return n<10?"0"+n:""+n}
+function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function auj(){return ymd(new Date())}
+function dt(s){return new Date(s+"T12:00:00")}
+function decale(s,n){var d=dt(s);d.setDate(d.getDate()+n);return ymd(d)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function borne(x){return Math.max(0,Math.min(1,x||0))}
+function pc(x){return Math.round(borne(x)*100)}
+function fusion(a,b){for(var k in b){if(b[k]&&typeof b[k]==="object"&&!Array.isArray(b[k]))a[k]=fusion(a[k]&&typeof a[k]==="object"?a[k]:{},b[k]);else a[k]=b[k]}return a}
+function lire(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+function ecrire(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function getP(o,p){return p.split(".").reduce(function(a,k){return a==null?a:a[k]},o)}
+function setP(o,p,v){var ks=p.split(".");for(var i=0;i<ks.length-1;i++){if(!o[ks[i]]||typeof o[ks[i]]!=="object")o[ks[i]]={};o=o[ks[i]]}o[ks[ks.length-1]]=v}
+function virgule(n){return String(n).replace(".",",")}
+function duree(m){var h=Math.floor(m/60),r=m%60;return h?h+" h"+(r?" "+pad(r):""):r+" min"}
+
+/* ---------- état ---------- */
+var R=fusion(reglagesDefaut(),lire("cq-reglages")||{});
+var cache={}, cur=auj(), onglet=ongletDepuisHash();
+function jour(s){if(!cache[s])cache[s]=fusion(jourVide(),lire("cq-jour-"+s)||{});return cache[s]}
+function sauverJour(s){ecrire("cq-jour-"+s,cache[s])}
+function sauverReglages(){ecrire("cq-reglages",R)}
+function ongletDepuisHash(){var h=location.hash.replace("#","");return ONGLETS.some(function(o){return o[0]===h})?h:"jour"}
+
+function seance(s){var l=(R.programme[dt(s).getDay()]||"").split("\n").map(function(x){return x.trim()}).filter(Boolean);return{nom:l[0]||"Repos",exos:l.slice(1)}}
+
+function scores(s){
+  var d=jour(s),o=R.objectifs;
+  var nbP=PRIERES.filter(function(p){return d.prieres[p[0]]}).length;
+  var foi=nbP/5*0.6+borne(d.coran/Math.max(1,R.coran))*0.25+((d.adhkar.m?1:0)+(d.adhkar.s?1:0))/2*0.15;
+  var se=seance(s),sport=null;
+  if(se.exos.length)sport=se.exos.filter(function(_,i){return d.sport.fait[i]}).length/se.exos.length;
+  var kc=d.nut.kcal>0?borne(1-Math.abs(d.nut.kcal-o.kcal)/o.kcal):0;
+  var alim=(kc+borne(d.nut.prot/o.prot)+borne(d.nut.eau/o.eau))/3;
+  var tot=d.etudes.cyber+d.etudes.reseau+d.etudes.elec;
+  var etudes=borne(tot/o.etudes);
+  var valo=VALO.filter(function(v){return d.valo.fait[v[0]]}).length/VALO.length;
+  var rt=MATIN.concat(SOIR),nr=rt.filter(function(v){return d.routine.fait[v[0]]}).length;
+  var routine=(nr+borne(d.routine.sommeil/o.sommeil)*2)/(rt.length+2);
+  var l=[foi,sport,alim,etudes,valo,routine].filter(function(x){return x!=null});
+  return{foi:foi,sport:sport,alimentation:alim,etudes:etudes,valorant:valo,routine:routine,
+    total:l.reduce(function(a,b){return a+b},0)/l.length,minutes:tot,prieres:nbP};
+}
+
+function serie(){var n=0,s=auj();if(scores(s).prieres<5)s=decale(s,-1);while(n<1000&&scores(s).prieres===5){n++;s=decale(s,-1)}return n}
+function totalCoran(){var t=0;try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf("cq-jour-")===0){var d=k===("cq-jour-"+cur)?cache[cur]:lire(k);t+=(d&&d.coran)||0}}}catch(e){}return t}
+function prochaine(){
+  if(cur!==auj())return"";var n=new Date(),m=n.getHours()*60+n.getMinutes();
+  for(var i=0;i<PRIERES.length;i++){var h=R.horaires[PRIERES[i][0]];if(!h)continue;var a=h.split(":");if(+a[0]*60+ +a[1]>m)return PRIERES[i][0]}
+  return""}
+
+/* ---------- petits composants ---------- */
+function coche(chemin,texte,on){return '<button class="check'+(on?' on':'')+'" data-a="coche" data-p="'+chemin+'" aria-pressed="'+(!!on)+'"><span class="box"></span><span class="label">'+esc(texte)+'</span></button>'}
+function barre(x){return '<div class="bar"><span style="width:'+pc(x)+'%"></span></div>'}
+function compteur(chemin,pas,unite,val,dec){var f=dec?virgule:function(x){return x};
+  return '<div class="counter"><button class="round-btn" data-a="ajout" data-p="'+chemin+'" data-n="-'+pas+'" aria-label="Retirer">−</button><b class="num">'+f(val)+' '+unite+'</b><button class="round-btn" data-a="ajout" data-p="'+chemin+'" data-n="'+pas+'">+ '+f(pas)+'</button></div>'}
+function champ(chemin,val,pas,label,ph){return '<input class="input n num" type="number" min="0" step="'+pas+'" inputmode="decimal" aria-label="'+label+'" placeholder="'+(ph||"0")+'" value="'+esc(val||"")+'" data-c="nombre" data-p="'+chemin+'">'}
+function carte(titre,pct,corps){return '<section class="card"><div class="card-head"><h2>'+titre+'</h2>'+(pct===undefined?'':'<span class="pct num">'+(pct==null?'Repos':pc(pct)+' %')+'</span>')+'</div>'+corps+'</section>'}
+function anneau(x){var r=40,c=2*Math.PI*r;return '<div class="ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="'+r+'" fill="none" stroke="var(--soft)" stroke-width="10"/><circle cx="48" cy="48" r="'+r+'" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+(c*borne(x)).toFixed(1)+' '+c.toFixed(1)+'"/></svg><b class="num">'+pc(x)+'%</b></div>'}
+function blocPrieres(d){var np=prochaine();
+  return '<div class="prayers">'+PRIERES.map(function(p){var on=d.prieres[p[0]];
+    return '<div class="prayer'+(on?' on':'')+(np===p[0]?' next':'')+'"><button data-a="coche" data-p="prieres.'+p[0]+'" aria-pressed="'+(!!on)+'">'+p[1]+'</button>'
+    +'<input type="time" aria-label="Heure de '+p[1]+'" value="'+esc(R.horaires[p[0]])+'" data-c="horaire" data-p="'+p[0]+'"></div>'}).join("")+'</div>'}
+
+/* ---------- onglets ---------- */
+var VUES={
+jour:function(d,s){
+  var np=prochaine(),nom={};PRIERES.forEach(function(p){nom[p[0]]=p[1]});
+  var liens=[["foi","Foi"],["sport","Sport"],["alimentation","Alimentation"],["etudes","Études"],["valorant","Valorant"],["routine","Routine"]];
+  return carte("Ma journée",undefined,'<div class="score">'+anneau(s.total)+'<div><div class="big num">'+pc(s.total)+' %</div><div class="muted small">de tes objectifs du jour sont atteints</div></div></div>')
+   +carte("Prières",s.prieres/5,blocPrieres(d)+'<div class="muted small">'+(np?'Prochaine : <b>'+nom[np]+' à '+R.horaires[np]+'</b>. ':'')+'Série de 5 prières : <b class="num">'+serie()+' j</b></div>')
+   +carte("Par domaine",undefined,'<div class="list">'+liens.map(function(l){var v=s[l[0]];
+      return '<a class="section-link" href="#'+l[0]+'"><span>'+l[1]+'</span>'+(v==null?'<span class="muted small">Jour de repos</span>':barre(v))+'<span class="pct num">'+(v==null?'':pc(v)+'%')+'</span></a>'}).join("")+'</div>')
+   +carte("Note du jour",undefined,'<textarea class="input" id="note" data-t="note" placeholder="Ce qui a bien marché, ce que je change demain">'+esc(d.note)+'</textarea>');
+},
+foi:function(d,s){
+  var manque=PRIERES.some(function(p){return!R.horaires[p[0]]});
+  return carte("Les 5 prières",s.prieres/5,blocPrieres(d)+(manque?'<div class="notice">Tape l\'heure sous chaque prière pour voir la prochaine.</div>':'')+'<div class="muted small">Série de 5 prières : <b class="num">'+serie()+' jour(s)</b></div>')
+   +carte("Lecture du Coran",borne(d.coran/R.coran),'<div class="row between">'+compteur("coran",1,"p.",d.coran)+'<span class="muted small">objectif '+R.coran+' pages</span></div>'+barre(d.coran/R.coran)+'<div class="muted small num">Total noté ici : '+totalCoran()+' pages sur 604</div>')
+   +carte("Adhkar",undefined,'<div class="list">'+coche("adhkar.m","Adhkar du matin",d.adhkar.m)+coche("adhkar.s","Adhkar du soir",d.adhkar.s)+'</div>');
+},
+sport:function(d,s,j){
+  var se=seance(j);
+  if(!se.exos.length)return carte(esc(se.nom),null,'<p class="muted" style="margin:0">Pas de séance prévue ce jour. Tu peux changer le programme dans Réglages.</p>');
+  var n=se.exos.filter(function(_,i){return d.sport.fait[i]}).length;
+  return carte(esc(se.nom),s.sport,'<div class="muted small num">'+n+' / '+se.exos.length+' exercices · note la charge en kg</div>'+barre(s.sport)
+   +'<div class="list">'+se.exos.map(function(e,i){return '<div class="task">'+coche("sport.fait."+i,e,d.sport.fait[i])+champ("sport.kg."+i,d.sport.kg[i],0.5,"Charge pour "+e,"kg")+'</div>'}).join("")+'</div>');
+},
+alimentation:function(d,s){var o=R.objectifs;
+  function ligne(t,ch,v,pas,u,obj){return '<div class="list"><div class="row between"><b>'+t+'</b><span class="muted small num">objectif '+obj+' '+u+'</span></div><div class="row">'+champ(ch,v,pas,t)+'<span class="muted">'+u+'</span></div>'+barre(v/obj)+'</div>'}
+  return carte("Aujourd'hui",s.alimentation,ligne("Calories","nut.kcal",d.nut.kcal,50,"kcal",o.kcal)+ligne("Protéines","nut.prot",d.nut.prot,5,"g",o.prot)
+   +'<div class="list"><div class="row between"><b>Eau</b><span class="muted small num">objectif '+virgule(o.eau)+' L</span></div>'+compteur("nut.eau",0.25,"L",d.nut.eau,true)+barre(d.nut.eau/o.eau)+'</div>')
+   +carte("Poids du corps",undefined,'<div class="row">'+champ("nut.poids",d.nut.poids,0.1,"Poids du corps","kg")+'<span class="muted">kg</span></div>');
+},
+etudes:function(d,s){
+  var ouv=R.taches.filter(function(t){return!t.f}),fin=R.taches.filter(function(t){return t.f}),nomM={};MATIERES.forEach(function(m){nomM[m[0]]=m[1]});
+  return carte("Temps d'étude",s.etudes,'<div class="row between"><span class="big num">'+duree(s.minutes)+'</span><span class="muted small">objectif '+duree(R.objectifs.etudes)+'</span></div>'+barre(s.etudes)
+   +'<div class="list">'+MATIERES.map(function(m){return '<div class="row between" style="background:var(--soft);border-radius:var(--r-sm);padding:10px 14px"><span>'+m[1]+' <span class="muted small num">· '+duree(d.etudes[m[0]])+'</span></span><span class="row"><button class="btn" data-a="ajout" data-p="etudes.'+m[0]+'" data-n="-15" aria-label="Retirer 15 min">−15</button><button class="btn main" data-a="ajout" data-p="etudes.'+m[0]+'" data-n="25">+25 min</button></span></div>'}).join("")+'</div>')
+   +carte("À faire",undefined,(R.taches.length?'<div class="list">'+ouv.concat(fin).map(function(t){return '<div class="task"><button class="check'+(t.f?' on':'')+'" data-a="tache" data-id="'+esc(t.id)+'"><span class="box"></span><span class="label">'+esc(t.t)+'</span><span class="tag">'+esc(nomM[t.m]||"Autre")+'</span></button><button class="del" data-a="suppr" data-id="'+esc(t.id)+'" aria-label="Supprimer">×</button></div>'}).join("")+'</div>':'<p class="muted" style="margin:0">Aucune tâche pour l\'instant.</p>')
+   +'<form class="row" id="form-tache"><input class="input" style="flex:1 1 200px" id="tache-texte" placeholder="Ex : lab Wireshark, TP Cisco, circuit RC" aria-label="Nouvelle tâche"><select class="input" id="tache-matiere" aria-label="Matière">'+MATIERES.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>'}).join("")+'</select><button class="btn main" type="submit">Ajouter</button></form>');
+},
+valorant:function(d,s){
+  return carte("Entraînement",s.valorant,'<div class="list">'+VALO.map(function(v){return coche("valo.fait."+v[0],v[1],d.valo.fait[v[0]])}).join("")+'</div>')
+   +carte("Classées du jour",undefined,'<div class="row between"><span>Victoires</span>'+compteur("valo.v",1,"",d.valo.v)+'</div><div class="row between"><span>Défaites</span>'+compteur("valo.d",1,"",d.valo.d)+'</div>')
+   +carte("Un point à améliorer",undefined,'<textarea class="input" id="focus" data-t="valo.focus" placeholder="Ex : crosshair placement, gestion de l\'économie">'+esc(d.valo.focus)+'</textarea>');
+},
+routine:function(d,s){var o=R.objectifs;
+  return carte("Matin",undefined,'<div class="list">'+MATIN.map(function(v){return coche("routine.fait."+v[0],v[1],d.routine.fait[v[0]])}).join("")+'</div>')
+   +carte("Soir",undefined,'<div class="list">'+SOIR.map(function(v){return coche("routine.fait."+v[0],v[1],d.routine.fait[v[0]])}).join("")+'</div>')
+   +carte("Sommeil",borne(d.routine.sommeil/o.sommeil),'<div class="row between"><span class="row">'+champ("routine.sommeil",d.routine.sommeil,0.25,"Heures de sommeil")+'<span class="muted">h</span></span><span class="muted small">objectif '+virgule(o.sommeil)+' h</span></div>'+barre(d.routine.sommeil/o.sommeil));
+},
+semaine:function(){
+  var jours=[],i,a={p:0,c:0,m:0,s:0};for(i=6;i>=0;i--)jours.push(decale(auj(),-i));
+  var cols=jours.map(function(j){var dd=jour(j),x=scores(j),se=seance(j);a.p+=x.prieres;a.c+=dd.coran;a.m+=x.minutes;
+    if(se.exos.length&&x.sport>=0.7)a.s++;
+    return '<button class="day'+(j===cur?' sel':'')+'" data-a="aller" data-d="'+j+'" aria-label="'+j+'"><b class="small num">'+pc(x.total)+'</b><div class="col"><span style="height:'+pc(x.total)+'%"></span></div><span class="muted small">'+JOURS[dt(j).getDay()].slice(0,3)+'</span></button>'}).join("");
+  return carte("7 derniers jours",undefined,'<div class="week">'+cols+'</div><div class="muted small">Score de chaque journée. Touche un jour pour l\'ouvrir.</div>')
+   +carte("Bilan",undefined,'<div class="stats"><div class="stat"><div class="muted small">Prières</div><div class="big num">'+a.p+'/35</div></div><div class="stat"><div class="muted small">Coran</div><div class="big num">'+a.c+' p.</div></div><div class="stat"><div class="muted small">Études</div><div class="big num">'+duree(a.m)+'</div></div><div class="stat"><div class="muted small">Séances</div><div class="big num">'+a.s+'</div></div></div>');
+},
+reglages:function(){var o=R.objectifs;
+  function n(l,p,pas,v){return '<label>'+l+'<input class="input num" type="number" min="0" step="'+pas+'" inputmode="decimal" value="'+v+'" data-c="reglage" data-p="'+p+'"></label>'}
+  return carte("Objectifs",undefined,'<div class="settings">'+n("Coran (pages/jour)","coran",1,R.coran)+n("Calories (kcal)","objectifs.kcal",50,o.kcal)+n("Protéines (g)","objectifs.prot",5,o.prot)+n("Eau (L)","objectifs.eau",0.25,o.eau)+n("Sommeil (h)","objectifs.sommeil",0.25,o.sommeil)+n("Études (min/jour)","objectifs.etudes",15,o.etudes)+'</div>')
+   +carte("Programme de sport",undefined,'<p class="muted small" style="margin:0">1re ligne : nom de la séance. Ensuite un exercice par ligne. Une seule ligne = jour de repos.</p><div class="settings">'+[1,2,3,4,5,6,0].map(function(k){return '<label>'+JOURS[k]+'<textarea class="input" rows="6" data-c="programme" data-p="'+k+'">'+esc(R.programme[k])+'</textarea></label>'}).join("")+'</div>')
+   +carte("Sauvegarde",undefined,'<p class="muted small" style="margin:0">Tes données restent dans ce navigateur. Exporte-les de temps en temps pour ne rien perdre ou pour les passer sur un autre appareil.</p><div class="row"><button class="btn main" data-a="export">Exporter mes données</button><label class="btn" for="import-file">Importer un fichier</label><input type="file" id="import-file" accept="application/json,.json" hidden></div><div id="import-msg" class="muted small"></div>');
+}};
+
+/* ---------- rendu ---------- */
+function rendu(){
+  var d=jour(cur),s=scores(cur),estAuj=cur===auj();
+  var titre=dt(cur).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  var h='<div class="top"><h1>'+esc(titre)+'</h1><div class="nav"><button class="round-btn" data-a="jourm" aria-label="Jour précédent">‹</button>'
+   +(estAuj?'':'<button class="round-btn" data-a="aller" data-d="'+auj()+'" aria-label="Revenir à aujourd\'hui">•</button>')
+   +'<button class="round-btn" data-a="jourp" aria-label="Jour suivant">›</button></div></div>'
+   +'<nav class="tabs" aria-label="Sections">'+ONGLETS.map(function(o){return '<a class="tab'+(o[0]===onglet?' active':'')+'" href="#'+o[0]+'"'+(o[0]===onglet?' aria-current="page"':'')+'>'+o[1]+'</a>'}).join("")+'</nav>'
+   +VUES[onglet](d,s,cur);
+  document.getElementById("app").innerHTML=h;
+  var nav=document.querySelector(".tabs"),act=document.querySelector(".tab.active");
+  if(nav&&act){var l=act.offsetLeft-nav.offsetLeft,r=l+act.offsetWidth;if(l<nav.scrollLeft)nav.scrollLeft=l-8;else if(r>nav.scrollLeft+nav.clientWidth)nav.scrollLeft=r-nav.clientWidth+8}
+}
+function maj(){sauverJour(cur);rendu()}
+
+/* ---------- événements ---------- */
+window.addEventListener("hashchange",function(){onglet=ongletDepuisHash();rendu();window.scrollTo(0,0)});
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-a]");if(!b)return;var a=b.dataset.a,d=jour(cur);
+  if(a==="coche"){setP(d,b.dataset.p,!getP(d,b.dataset.p));maj()}
+  else if(a==="ajout"){var v=(getP(d,b.dataset.p)||0)+parseFloat(b.dataset.n);setP(d,b.dataset.p,Math.max(0,Math.round(v*100)/100));maj()}
+  else if(a==="jourm"){cur=decale(cur,-1);rendu()}
+  else if(a==="jourp"){cur=decale(cur,1);rendu()}
+  else if(a==="aller"){cur=b.dataset.d;if(onglet==="semaine")location.hash="jour";else rendu()}
+  else if(a==="tache"){R.taches.forEach(function(t){if(t.id===b.dataset.id)t.f=!t.f});sauverReglages();rendu()}
+  else if(a==="suppr"){R.taches=R.taches.filter(function(t){return t.id!==b.dataset.id});sauverReglages();rendu()}
+  else if(a==="export")exporter();
+});
+document.addEventListener("change",function(e){
+  var el=e.target,c=el.dataset&&el.dataset.c;
+  if(el.id==="import-file"){importer(el.files[0]);return}
+  if(!c)return;var d=jour(cur);
+  if(c==="nombre"){var vide=/poids|kg/.test(el.dataset.p);setP(d,el.dataset.p,el.value===""?(vide?"":0):parseFloat(el.value));maj()}
+  else if(c==="horaire"){R.horaires[el.dataset.p]=el.value;sauverReglages();rendu()}
+  else if(c==="reglage"){var n=parseFloat(el.value);if(n>0){setP(R,el.dataset.p,n);sauverReglages();rendu()}}
+  else if(c==="programme"){R.programme[el.dataset.p]=el.value;sauverReglages();rendu()}
+});
+document.addEventListener("input",function(e){var el=e.target;if(!el.dataset||!el.dataset.t)return;setP(jour(cur),el.dataset.t,el.value);sauverJour(cur)});
+document.addEventListener("submit",function(e){
+  if(e.target.id!=="form-tache")return;e.preventDefault();
+  var t=document.getElementById("tache-texte").value.trim();if(!t)return;
+  R.taches.push({id:"t"+Date.now().toString(36),t:t,m:document.getElementById("tache-matiere").value,f:false});sauverReglages();rendu();
+  var f=document.getElementById("tache-texte");if(f)f.focus();
+});
+
+function exporter(){
+  var out={app:"cap-quotidien",version:1,reglages:R,jours:{}};
+  try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf("cq-jour-")===0)out.jours[k.slice(8)]=lire(k)}}catch(e){}
+  var blob=new Blob([JSON.stringify(out,null,1)],{type:"application/json"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download="cap-quotidien-"+auj()+".json";document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+function importer(f){
+  var msg=document.getElementById("import-msg");if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){try{var o=JSON.parse(r.result);if(o.app!=="cap-quotidien")throw 0;
+      R=fusion(reglagesDefaut(),o.reglages||{});sauverReglages();cache={};
+      Object.keys(o.jours||{}).forEach(function(k){if(/^\d{4}-\d\d-\d\d$/.test(k))ecrire("cq-jour-"+k,o.jours[k])});
+      rendu();document.getElementById("import-msg").textContent="Données importées.";
+    }catch(e){msg.textContent="Ce fichier n'est pas une sauvegarde Cap Quotidien."}};
+  r.readAsText(f);
+}
+
+rendu();
+})();
+</script>
+</body>
+</html>
