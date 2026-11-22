@@ -288,8 +288,12 @@ function rendu(){
    +'<nav class="tabs" aria-label="Sections">'+ONGLETS.map(function(o){return '<a class="tab'+(o[0]===onglet?' active':'')+'" href="#'+o[0]+'"'+(o[0]===onglet?' aria-current="page"':'')+'>'+o[1]+'</a>'}).join("")+'</nav>'
    +VUES[onglet](d,s,cur);
   document.getElementById("app").innerHTML=h;
-  var nav=document.querySelector(".tabs"),act=document.querySelector(".tab.active");
-  if(nav&&act){var l=act.offsetLeft-nav.offsetLeft,r=l+act.offsetWidth;if(l<nav.scrollLeft)nav.scrollLeft=l-8;else if(r>nav.scrollLeft+nav.clientWidth)nav.scrollLeft=r-nav.clientWidth+8}
+  placerOnglet();requestAnimationFrame(placerOnglet);
+}
+function placerOnglet(){
+  var nav=document.querySelector(".tabs"),act=document.querySelector(".tab.active");if(!nav||!act)return;
+  nav.scrollLeft=0;var nr=nav.getBoundingClientRect(),ar=act.getBoundingClientRect();
+  if(ar.right>nr.right)nav.scrollLeft=ar.right-nr.right+12;
 }
 function maj(){sauverJour(cur);rendu()}
 
