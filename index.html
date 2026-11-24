@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cap Quotidien</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2b62d9">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cap">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="description" content="Ma journée organisée : prières, Coran, sport, alimentation, études, Valorant et routine.">
 <style>
 :root{
@@ -121,6 +129,22 @@ select.input{padding-right:10px}
   .prayer input,.prayer .heure{width:120px;flex:none;padding:8px 0}
   .section-link{grid-template-columns:90px 1fr 44px}
 }
+
+/* téléphone : barre d'onglets en bas (à portée du pouce), actions rapides */
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.quick-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:var(--soft);border-radius:var(--r-sm);padding:14px 6px;min-height:92px;text-align:center}
+.quick-btn:active{transform:scale(.97)}
+.quick-btn.on{background:var(--accent);color:#fff}
+.quick-btn.on .muted{color:rgba(255,255,255,.85)}
+.q-ic{font-size:26px;line-height:1.1}
+.q-t{font-weight:600;font-size:14px}
+@media (display-mode:standalone){body{padding-top:max(16px,env(safe-area-inset-top))}}
+@media (max-width:640px){
+  body{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+  .tabs{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:20;box-shadow:0 6px 24px rgba(0,0,0,.22)}
+  .tab{padding:11px 15px}
+}
 </style>
 </head>
 <body>
@@ -222,12 +246,22 @@ function blocPrieres(d){var np=prochaine(),a=horairesAuto(cur);a=a&&a.fajr?a:nul
     +(a?'<span class="heure num">'+esc(a[p[0]]||"–")+'</span>':'<input type="time" aria-label="Heure de '+p[1]+'" value="'+esc(R.horaires[p[0]])+'" data-c="horaire" data-p="'+p[0]+'">')+'</div>'}).join("")+'</div>'
    +(a?'<div class="muted small">Horaires de la '+esc(AUTO.mosquee||"mosquée")+(a.chourouq?' · Chourouq '+esc(a.chourouq):'')+(a.joumoua?' · Joumoua '+esc(a.joumoua):'')+'</div>':'')}
 
+/* ---------- actions rapides (téléphone) ---------- */
+function actionsRapides(d,np,nom){
+  function bouton(on,attrs,ic,t,v){return '<button class="quick-btn'+(on?' on':'')+'" '+attrs+'><span class="q-ic">'+ic+'</span><span class="q-t">'+t+'</span><span class="q-v num muted small">'+v+'</span></button>'}
+  var h='';
+  if(np)h+=bouton(d.prieres[np],'data-a="coche" data-p="prieres.'+np+'" aria-pressed="'+(!!d.prieres[np])+'"',"🕌",nom[np],d.prieres[np]?"faite":"à cocher");
+  h+=bouton(false,'data-a="ajout" data-p="nut.eau" data-n="0.25"',"💧","Eau +0,25 L",virgule(d.nut.eau)+" L");
+  h+=bouton(false,'data-a="ajout" data-p="coran" data-n="1"',"📖","Coran +1 page",d.coran+" p.");
+  return carte("Actions rapides",undefined,'<div class="quick">'+h+'</div>');
+}
+
 /* ---------- onglets ---------- */
 var VUES={
 jour:function(d,s){
   var np=prochaine(),nom={};PRIERES.forEach(function(p){nom[p[0]]=p[1]});
   var liens=[["foi","Foi"],["sport","Sport"],["alimentation","Alimentation"],["etudes","Études"],["valorant","Valorant"],["routine","Routine"]];
-  return carte("Ma journée",undefined,'<div class="score">'+anneau(s.total)+'<div><div class="big num">'+pc(s.total)+' %</div><div class="muted small">de tes objectifs du jour sont atteints</div></div></div>')
+  return actionsRapides(d,np,nom)+carte("Ma journée",undefined,'<div class="score">'+anneau(s.total)+'<div><div class="big num">'+pc(s.total)+' %</div><div class="muted small">de tes objectifs du jour sont atteints</div></div></div>')
    +carte("Prières",s.prieres/5,blocPrieres(d)+'<div class="muted small">'+(np?'Prochaine : <b>'+nom[np]+' à '+horairesDu(cur)[np]+'</b>. ':'')+'Série de 5 prières : <b class="num">'+serie()+' j</b></div>')
    +carte("Par domaine",undefined,'<div class="list">'+liens.map(function(l){var v=s[l[0]];
       return '<a class="section-link" href="#'+l[0]+'"><span>'+l[1]+'</span>'+(v==null?'<span class="muted small">Jour de repos</span>':barre(v))+'<span class="pct num">'+(v==null?'':pc(v)+'%')+'</span></a>'}).join("")+'</div>')
@@ -283,6 +317,21 @@ reglages:function(){var o=R.objectifs;
    +carte("Programme de sport",undefined,'<p class="muted small" style="margin:0">1re ligne : nom de la séance. Ensuite un exercice par ligne. Une seule ligne = jour de repos.</p><div class="settings">'+[1,2,3,4,5,6,0].map(function(k){return '<label>'+JOURS[k]+'<textarea class="input" rows="6" data-c="programme" data-p="'+k+'">'+esc(R.programme[k])+'</textarea></label>'}).join("")+'</div>')
    +carte("Sauvegarde",undefined,'<p class="muted small" style="margin:0">Tes données restent dans ce navigateur. Exporte-les de temps en temps pour ne rien perdre ou pour les passer sur un autre appareil.</p><div class="row"><button class="btn main" data-a="export">Exporter mes données</button><label class="btn" for="import-file">Importer un fichier</label><input type="file" id="import-file" accept="application/json,.json" hidden></div><div id="import-msg" class="muted small"></div>');
 }};
+
+/* ---------- installation sur le téléphone ---------- */
+var invite=null;
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();invite=e;if(onglet==="reglages")rendu()});
+window.addEventListener("appinstalled",function(){invite=null;if(onglet==="reglages")rendu()});
+var _reglages=VUES.reglages;
+VUES.reglages=function(){
+  var installee=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+  return _reglages.apply(this,arguments)+carte("Installer sur le téléphone",undefined,
+    installee?'<p class="muted small" style="margin:0">✓ Tu utilises déjà l\'appli installée. Elle marche aussi sans connexion.</p>'
+    :'<p class="muted small" style="margin:0">Ajoute Cap Quotidien à ton écran d\'accueil : il s\'ouvre comme une vraie appli, en plein écran, et marche sans connexion.</p>'
+     +(invite?'<button class="round-btn" data-a="installer">Installer l\'appli</button>':'')
+     +'<div class="muted small"><b>iPhone</b> (Safari) : Partager, puis « Sur l\'écran d\'accueil ».<br><b>Android</b> (Chrome) : menu ⋮, puis « Installer l\'application ».</div>');
+};
+document.addEventListener("click",function(e){var b=e.target.closest('[data-a="installer"]');if(!b||!invite)return;invite.prompt();invite=null});
 
 /* ---------- rendu ---------- */
 function rendu(){
@@ -357,6 +406,7 @@ fetch("horaires.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():
 }).catch(function(){});
 setInterval(function(){if(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;if(onglet==="jour"||onglet==="foi")rendu()},60000);
 })();
+if("serviceWorker" in navigator&&location.protocol!=="file:")navigator.serviceWorker.register("sw.js").catch(function(){});
 </script>
 </body>
 </html>

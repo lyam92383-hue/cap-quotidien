@@ -1,0 +1,22 @@
+{
+  "name": "Cap Quotidien",
+  "short_name": "Cap",
+  "description": "Ma journée organisée : prières, Coran, sport, alimentation, études, Valorant et routine.",
+  "lang": "fr",
+  "start_url": "./#jour",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f6f4",
+  "theme_color": "#2b62d9",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Prières", "url": "./#foi", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Sport", "url": "./#sport", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Alimentation", "url": "./#alimentation", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
