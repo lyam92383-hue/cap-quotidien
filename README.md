@@ -25,7 +25,7 @@ Sur téléphone, les onglets passent en bas de l'écran, et la page **Aujourd'hu
 
 ## Widget iPhone
 
-Un widget gratuit avec l'appli **Scriptable** : la prochaine prière avec son compte à rebours, et (en taille moyenne) les 5 prières du jour. Toucher le widget ouvre l'onglet Foi.
+Un widget gratuit avec l'appli **Scriptable** : la prochaine prière avec son compte à rebours, et (en taille moyenne) les 5 prières du jour. Toucher le widget ouvre l'onglet Foi. Il existe aussi en **écran de verrouillage** (mosquée, date hégirienne, prière à venir avec compte à rebours) : appui long sur l'écran verrouillé, Personnaliser, ajoute un widget Scriptable, puis choisis le script « Cap ».
 
 1. Installe **Scriptable** depuis l'App Store.
 2. Ouvre [`widget-iphone.js`](https://raw.githubusercontent.com/lyam92383-hue/cap-quotidien/main/widget-iphone.js) dans Safari, sélectionne tout le texte et copie-le.
